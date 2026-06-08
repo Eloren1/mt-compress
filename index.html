@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Compress</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#1e1e1e;
+  --panel:#252525;
+  --border:#333;
+  --text:#dddddd;
+  --dim:#666;
+  --green:#d4ffd4;
+  --accent:#4a9eff;
+}
+
+html,body{height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+
+#input{
+  flex:1;min-height:0;
+  background:var(--bg);color:var(--text);
+  border:none;outline:none;resize:none;
+  padding:14px 16px;
+  font-family:'Courier New',Courier,monospace;font-size:15px;line-height:1.65;
+  caret-color:var(--accent);
+}
+#input::placeholder{color:var(--dim)}
+
+.margin{
+  display:flex;align-items:center;justify-content:center;
+  height:36px;flex-shrink:0;
+  background:var(--panel);
+  border-top:2px solid var(--border);
+  border-bottom:2px solid var(--border);
+  padding:0 16px;
+}
+
+#stats{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+#stats .g{color:var(--green)}
+#stats .y{color:#c1c167}
+#stats .r{color:#825656}
+
+#result{
+  flex:1;min-height:0;
+  padding:14px 16px;
+  font-family:'Courier New',Courier,monospace;font-size:15px;line-height:1.65;
+  overflow-y:auto;
+  cursor:pointer;
+  white-space:pre-wrap;word-break:break-word;
+  -webkit-tap-highlight-color:transparent;
+}
+#result:empty::before{content:'Результат здесь…';color:var(--dim)}
+#result .c{color:var(--green)}
+
+.buttons{
+  display:flex;gap:7px;
+  padding:9px 9px 10px;
+  background:var(--panel);
+  border-top:2px solid var(--border);
+  flex-shrink:0;
+}
+
+.buttons button{
+  flex:1;height:58px;
+  font-size:16px;font-weight:700;
+  border:none;border-radius:10px;
+  background:#2a2a2a;color:var(--text);
+  cursor:pointer;touch-action:manipulation;
+  transition:background .12s,color .12s;
+}
+.buttons button:active{opacity:.65}
+.buttons button.on{background:var(--accent);color:#fff}
+.buttons .cp{flex:1.5;background:#1c321c;color:var(--green)}
+.buttons .cp:active{background:#264826}
+
+footer{
+  padding:6px 16px 8px;
+  font-size:11px;color:#484848;
+  text-align:center;flex-shrink:0;
+  background:var(--bg);
+}
+footer a{color:#555;text-decoration:underline;text-underline-offset:2px}
+
+.popup{
+  position:fixed;inset:0;display:flex;
+  align-items:center;justify-content:center;
+  pointer-events:none;z-index:99;
+}
+.popup-box{
+  background:rgba(22,22,22,.96);
+  color:var(--green);
+  border:1px solid rgba(212,255,212,.35);
+  padding:11px 30px;border-radius:14px;
+  font-size:17px;font-weight:600;
+  opacity:0;transform:scale(.8);
+  transition:opacity .14s,transform .14s;
+}
+.popup.show .popup-box{opacity:1;transform:scale(1)}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <textarea id="input" placeholder="Введите текст…" spellcheck="false"
+            autocorrect="off" autocapitalize="off"></textarea>
+
+  <div class="margin"><span id="stats">Введите текст</span></div>
+
+  <div id="result" onclick="copyResult()"></div>
+
+  <div class="buttons">
+    <button id="b1" onclick="compress(1)">v1</button>
+    <button id="b2" onclick="compress(2)">v2</button>
+    <button id="b3" onclick="compress(3)">v3</button>
+    <button id="b4" onclick="compress(4)">v4</button>
+    <button class="cp" onclick="copyResult()">COPY</button>
+  </div>
+
+  <footer>
+    Текст обрабатывается локально на вашем устройстве.&thinsp;
+    <a href="#" id="src-link">Открытый исходный код</a>
+  </footer>
+</div>
+
+<div class="popup" id="popup"><div class="popup-box">Copied!</div></div>
+
+<script>
+const MAPS = [
+  null,
+  // v1 — visually identical lookalikes
+  {а:'a',е:'e',ё:'e',о:'o',р:'p',с:'c',у:'y',х:'x',
+   А:'A',В:'B',Е:'E',Ё:'E',З:'3',К:'K',Н:'H',О:'O',
+   Р:'P',С:'C',Т:'T',Х:'X','«':'"','»':'"',М:'M'},
+  // v2
+  {б:'6',г:'r',и:'u',п:'n'},
+  // v3
+  {к:'k',ь:'b',У:'Y',д:'d'},
+  // v4
+  {з:'3',т:'t',ч:'4',ш:'w',щ:'w',Ч:'4',Ш:'W',Щ:'W','—':'-'}
+];
+
+let level = 0, resultText = '';
+
+function mergedMap(n) {
+  const m = {};
+  for (let i = 1; i <= n; i++) Object.assign(m, MAPS[i]);
+  return m;
+}
+
+function byteLen(str) {
+  let n = 0;
+  for (const ch of str) n += ch.codePointAt(0) < 128 ? 1 : 2;
+  return n;
+}
+
+function esc(s) {
+  return s === '&' ? '&amp;' : s === '<' ? '&lt;' : s === '>' ? '&gt;' : s;
+}
+
+function compress(n) {
+  const text = document.getElementById('input').value;
+  if (!text) return;
+  level = n;
+  updateBtns();
+  const map = mergedMap(n);
+  const orig = [...text];
+  const res  = orig.map(ch => map[ch] ?? ch);
+  resultText = res.join('');
+
+  // build highlighted HTML
+  let html = '';
+  for (let i = 0; i < res.length; i++) {
+    const ch = res[i];
+    if (ch === '\n') { html += '\n'; continue; }
+    html += orig[i] !== ch
+      ? `<span class="c">${esc(ch)}</span>`
+      : esc(ch);
+  }
+  document.getElementById('result').innerHTML = html;
+  updateStats();
+}
+
+function updateStats() {
+  const input = document.getElementById('input').value;
+  const el = document.getElementById('stats');
+  const ob = byteLen(input);
+
+  if (!ob) { el.innerHTML = 'Введите текст'; return; }
+
+  if (!resultText || !level) {
+    const p = Math.ceil(ob / 200);
+    const c = p <= 1 ? 'g' : p === 2 ? 'y' : 'r';
+    el.innerHTML = `${ob} байт · <span class="${c}">${p} пак.</span>`;
+    return;
+  }
+
+  const cb = byteLen(resultText);
+  const pct = Math.round((ob - cb) / ob * 100);
+  const p = Math.ceil(cb / 200);
+  const c = p <= 1 ? 'g' : p === 2 ? 'y' : 'r';
+  el.innerHTML = `${ob} → <span class="g">${cb} байт</span> · −${pct}% · <span class="${c}">${p} пак.</span>`;
+}
+
+function updateBtns() {
+  for (let i = 1; i <= 4; i++)
+    document.getElementById('b'+i).classList.toggle('on', i === level);
+}
+
+let popTimer;
+function showPopup() {
+  const p = document.getElementById('popup');
+  p.classList.add('show');
+  clearTimeout(popTimer);
+  popTimer = setTimeout(() => p.classList.remove('show'), 1100);
+}
+
+async function copyResult() {
+  if (!resultText) return;
+  try {
+    await navigator.clipboard.writeText(resultText);
+  } catch {
+    const t = Object.assign(document.createElement('textarea'),
+      {value: resultText, style: 'position:fixed;opacity:0'});
+    document.body.appendChild(t);
+    t.select();
+    document.execCommand('copy');
+    t.remove();
+  }
+  showPopup();
+}
+
+document.getElementById('input').addEventListener('input', () => {
+  if (!document.getElementById('input').value) {
+    resultText = '';
+    document.getElementById('result').innerHTML = '';
+    level = 0;
+    updateBtns();
+  } else if (level > 0) {
+    compress(level);
+    return;
+  }
+  updateStats();
+});
+</script>
+</body>
+</html>
