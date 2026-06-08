@@ -81,15 +81,19 @@
 </div>
 
 <script>
-const MAPS = [
-  null,
-  {а:'a',е:'e',ё:'e',о:'o',р:'p',с:'c',у:'y',х:'x',
-   А:'A',В:'B',Е:'E',Ё:'E',З:'3',К:'K',Н:'H',О:'O',
-   Р:'P',С:'C',Т:'T',Х:'X','«':'"','»':'"',М:'M'},
-  {б:'6',г:'r',и:'u',п:'n'},
-  {к:'k',ь:'b',У:'Y',д:'d'},
-  {з:'3',т:'t',ч:'4',ш:'w',щ:'w',Ч:'4',Ш:'W',Щ:'W','—':'-'}
-];
+let MAPS = [null, {}, {}, {}, {}];
+
+function parseMaps(text) {
+  const maps = [null];
+  let cur = null;
+  for (const line of text.split('\n')) {
+    const t = line.trim();
+    const m = t.match(/^\[(\d+)\]$/);
+    if (m) { cur = {}; maps[parseInt(m[1])] = cur; }
+    else if (cur && t.length >= 3 && t[1] === '=') cur[t[0]] = t[2];
+  }
+  return maps;
+}
 
 const LEVEL_COLORS = ['','var(--lc-1)','var(--lc-2)','var(--lc-3)','var(--lc-4)'];
 
@@ -256,12 +260,14 @@ function closeSettings() {
 }
 
 async function initApp() {
-  const [ruTxt, enTxt] = await Promise.all([
+  const [ruTxt, enTxt, mapsTxt] = await Promise.all([
     fetch('i18n/ru.txt').then(r => r.text()),
     fetch('i18n/en.txt').then(r => r.text()),
+    fetch('swap_rules.txt').then(r => r.text()),
   ]);
   I18N.ru = makeI18N(parseTxt(ruTxt));
   I18N.en = makeI18N(parseTxt(enTxt));
+  MAPS = parseMaps(mapsTxt);
 
   applyTheme(settings.theme);
   applyLang(lang);
