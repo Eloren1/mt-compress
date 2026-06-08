@@ -21,6 +21,7 @@
   <div class="stats-row">
     <span id="stats">Введите текст</span>
     <button class="cp" onclick="copyResult()">COPY</button>
+    <div class="popup" id="popup"><div class="popup-box" id="popup-box">Скопировано!</div></div>
   </div>
 
   <div id="result" onclick="resultClick()"></div>
@@ -33,10 +34,8 @@
 </div>
 
 <footer>
-  <a href="https://github.com/Eloren1/mt-compress" id="src-link" target="_blank" rel="noopener">Исходный код</a>&ensp;·&ensp;<span id="local-note">Текст обрабатывается локально на вашем устройстве</span>&ensp;·&ensp;<a href="#" id="settings-link">Настройки</a>
+  <a href="https://github.com/Eloren1/mt-compress" id="src-link" target="_blank" rel="noopener">Исходный код</a><span class="f-sep" id="f-sep-1">&ensp;·&ensp;</span><span id="local-note">Текст обрабатывается локально на вашем устройстве</span><span class="f-sep" id="f-sep-2">&ensp;·&ensp;</span><a href="#" id="settings-link">Настройки</a>
 </footer>
-
-<div class="popup" id="popup"><div class="popup-box" id="popup-box">Скопировано!</div></div>
 
 <!-- Settings Modal -->
 <div class="s-overlay" id="s-overlay">
