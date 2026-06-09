@@ -8,11 +8,11 @@
   --border:#333;
   --text:#dddddd;
   --dim:#666;
-  --green:#8ed48e;
+  --green:#b0e4b0;
   --accent:#2e6db3;
   --radius:14px;
 
-  --lc-1:#72e672;
+  --lc-1:#6bbfd8;
   --lc-2:#72e672;
   --lc-3:#c8b94a;
   --lc-4:#c46060;
@@ -82,10 +82,6 @@
   --cancel-bg:#9e9789;
   --cancel-color:#fff;
   --ghost-hover:#ddd5c4;
-  --lc-1:#2e7d5a;
-  --lc-2:#2e7d5a;
-  --lc-3:#b07a1a;
-  --lc-4:#b84040;
 }
 
 html,body{
@@ -106,7 +102,7 @@ body{
   display:flex;
   flex-direction:column;
   width:100%;
-  max-width:900px;
+  max-width:800px;
   height:100vh;
   height:100dvh;
   max-height:1000px;
@@ -121,7 +117,7 @@ body{
   border:1px solid var(--border);
   border-radius:var(--radius);
   outline:none;resize:none;
-  padding:16px 42px 16px 18px;
+  padding:16px 18px;
   font-family:'Roboto Mono',Consolas,sans-serif;font-size:15px;line-height:1.6;letter-spacing:0.01em;
   caret-color:var(--accent);
 }
@@ -153,7 +149,7 @@ body{
 
 #result{
   width:100%;height:100%;
-  padding:16px 42px 16px 18px;
+  padding:16px 18px;
   font-family:'Roboto Mono',Consolas,sans-serif;font-size:15px;line-height:1.6;letter-spacing:0.01em;
   overflow-y:auto;
   cursor:default;
@@ -171,12 +167,12 @@ body{
 
 .clip-btn{
   position:absolute;
-  top:3px;right:3px;
+  bottom:3px;right:3px;
   background:none;
   border:none;
   filter:drop-shadow(0 0 2px var(--panel)) drop-shadow(0 0 2px var(--panel)) drop-shadow(0 0 2px var(--panel));
   border-radius:var(--radius);
-  padding:12px 12px 20px 20px;
+  padding:20px 12px 12px 20px;
   cursor:pointer;
   color:var(--dim);
   touch-action:manipulation;
@@ -199,6 +195,8 @@ body{
   padding:14px 8px;
   margin-top:10px;
   margin-bottom:13px;
+  width:90%;
+  align-self:center;
 }
 
 .slider-wrap{
@@ -238,7 +236,6 @@ body{
   border:2px solid rgba(0,0,0,0.4);
   cursor:pointer;
   box-shadow:var(--thumb-shadow);
-  transition:background .08s;
 }
 
 #level-slider::-moz-range-thumb{
@@ -249,7 +246,6 @@ body{
   border:2px solid rgba(0,0,0,0.4);
   cursor:pointer;
   box-shadow:var(--thumb-shadow);
-  transition:background .08s;
 }
 
 #level-slider::-moz-range-track{

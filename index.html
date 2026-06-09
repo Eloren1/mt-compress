@@ -389,6 +389,26 @@ async function initApp() {
     if (inputEl.value) compress(level);
   });
 
+  function updateSliderFromPointer(e) {
+    const rect = slider.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const min = parseInt(slider.min);
+    const max = parseInt(slider.max);
+    const newVal = Math.round(min + ratio * (max - min));
+    if (parseInt(slider.value) !== newVal) {
+      slider.value = newVal;
+      slider.dispatchEvent(new Event('input'));
+    }
+  }
+  slider.addEventListener('pointerdown', e => {
+    slider.setPointerCapture(e.pointerId);
+    updateSliderFromPointer(e);
+  });
+  slider.addEventListener('pointermove', e => {
+    if (!e.buttons) return;
+    updateSliderFromPointer(e);
+  });
+
   window.addEventListener('beforeunload', () => {
     if (settings.saveText) localStorage.setItem('mesh-text', inputEl.value);
     else localStorage.removeItem('mesh-text');
