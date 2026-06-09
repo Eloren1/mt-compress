@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Compress</title>
+<title>Mesh Compress</title>
 <script>
 (function(){
-  try{var s=JSON.parse(localStorage.getItem('mt-settings')||'{}');
+  try{var s=JSON.parse(localStorage.getItem('mesh-settings')||'{}');
   if(s.theme)document.documentElement.setAttribute('data-theme',s.theme);}catch(e){}
 })();
 </script>
@@ -34,7 +34,7 @@
 </div>
 
 <footer>
-  <a href="https://github.com/Eloren1/mt-compress" id="src-link" target="_blank" rel="noopener">Исходный код</a><span class="f-sep" id="f-sep-1">&ensp;·&ensp;</span><span id="local-note">Текст обрабатывается локально на вашем устройстве</span><span class="f-sep" id="f-sep-2">&ensp;·&ensp;</span><a href="#" id="settings-link">Настройки</a>
+  <a href="https://github.com/Eloren1/mesh-compress" id="src-link" target="_blank" rel="noopener">Исходный код</a><span class="f-sep" id="f-sep-1">&ensp;·&ensp;</span><span id="local-note">Текст обрабатывается локально на вашем устройстве</span><span class="f-sep" id="f-sep-2">&ensp;·&ensp;</span><a href="#" id="settings-link">Настройки</a>
 </footer>
 
 <!-- Settings Modal -->
@@ -72,6 +72,9 @@
         <label for="s-save-text" id="s-save-text-lbl">Сохранять текст перед уходом</label>
         <input type="checkbox" id="s-save-text" checked>
       </div>
+      <div class="s-row">
+        <button class="s-swap-rules-btn" id="s-swap-rules-btn">Настроить правила замены символов</button>
+      </div>
     </div>
     <div class="s-footer">
       <button class="s-close-btn" id="s-close-btn">Закрыть</button>
@@ -79,8 +82,26 @@
   </div>
 </div>
 
+<!-- Swap Rules Modal -->
+<div class="s-overlay" id="sr-overlay">
+  <div class="s-box s-box-tall">
+    <div class="s-header">
+      <span class="s-title" id="sr-title">Правила замены символов</span>
+      <button class="s-x" id="sr-x" aria-label="Close">✕</button>
+    </div>
+    <div class="s-body s-body-grow">
+      <textarea id="sr-textarea" class="sr-textarea" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+    </div>
+    <div class="s-footer s-footer-two">
+      <button class="s-close-btn s-cancel-btn" id="sr-cancel">Отмена</button>
+      <button class="s-close-btn s-save-btn" id="sr-save">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let MAPS = [null, {}, {}, {}, {}];
+let defaultMapsTxt = '';
 
 function parseMaps(text) {
   const maps = [null];
@@ -113,19 +134,31 @@ function parseTxt(text) {
 }
 
 function makeI18N(raw) {
+  function packWord(p) {
+    if (raw.pack5 !== undefined) {
+      const abs = Math.abs(p) % 100;
+      const r = abs % 10;
+      if (abs >= 11 && abs <= 19) return raw.pack5;
+      if (r === 1) return raw.pack1;
+      if (r >= 2 && r <= 4) return raw.pack2;
+      return raw.pack5;
+    }
+    return p === 1 ? raw.pack1 : raw.pack2;
+  }
   return {
     ...raw,
     statsBytes: ob => raw.statsBytes.replace('{ob}', ob),
     statsLine: (lv, ob, cb, pct, p) =>
       raw.statsLine
         .replace('{lv}', lv).replace('{ob}', ob)
-        .replace('{cb}', cb).replace('{pct}', pct).replace('{p}', p),
+        .replace('{cb}', cb).replace('{pct}', pct)
+        .replace('{p}', p).replace('{pw}', packWord(p)),
   };
 }
 
 const DEFAULT_SETTINGS = { lang: detectBrowserLang(), theme: 'dark', batchSize: 200, copyOnClick: true, saveText: true };
 let settings = { ...DEFAULT_SETTINGS };
-try { Object.assign(settings, JSON.parse(localStorage.getItem('mt-settings') || '{}')); } catch {}
+try { Object.assign(settings, JSON.parse(localStorage.getItem('mesh-settings') || '{}')); } catch {}
 
 if (!['ru', 'en'].includes(settings.lang)) settings.lang = detectBrowserLang();
 let lang = settings.lang;
@@ -153,14 +186,18 @@ function applyLang(l) {
   document.getElementById('s-copy-lbl').textContent     = t.sCopyLbl;
   document.getElementById('s-save-text-lbl').textContent = t.sSaveTextLbl;
   document.getElementById('s-close-btn').textContent    = t.sCloseBtn;
+  document.getElementById('s-swap-rules-btn').textContent = t.sSwapRulesBtn;
+  document.getElementById('sr-title').textContent       = t.sSwapRulesTitle;
+  document.getElementById('sr-cancel').textContent      = t.sSwapRulesCancel;
+  document.getElementById('sr-save').textContent        = t.sSwapRulesSave;
   updateStats();
 }
 
 function saveSettings() {
-  localStorage.setItem('mt-settings', JSON.stringify(settings));
+  localStorage.setItem('mesh-settings', JSON.stringify(settings));
 }
 
-const savedLevel = parseInt(localStorage.getItem('mt-level'));
+const savedLevel = parseInt(localStorage.getItem('mesh-level'));
 let level = (savedLevel >= 1 && savedLevel <= 4) ? savedLevel : 1;
 let resultText = '';
 
@@ -258,6 +295,25 @@ function closeSettings() {
   document.getElementById('s-overlay').classList.remove('open');
 }
 
+function openSwapRules() {
+  const custom = localStorage.getItem('mesh-swap-rules');
+  document.getElementById('sr-textarea').value = custom !== null ? custom : defaultMapsTxt;
+  document.getElementById('sr-overlay').classList.add('open');
+}
+
+function closeSwapRules() {
+  document.getElementById('sr-overlay').classList.remove('open');
+}
+
+function saveSwapRules() {
+  const txt = document.getElementById('sr-textarea').value;
+  localStorage.setItem('mesh-swap-rules', txt);
+  MAPS = parseMaps(txt);
+  const inputEl = document.getElementById('input');
+  if (inputEl.value) compress(level);
+  closeSwapRules();
+}
+
 async function initApp() {
   const [ruTxt, enTxt, mapsTxt] = await Promise.all([
     fetch('i18n/ru.txt').then(r => r.text()),
@@ -266,14 +322,16 @@ async function initApp() {
   ]);
   I18N.ru = makeI18N(parseTxt(ruTxt));
   I18N.en = makeI18N(parseTxt(enTxt));
-  MAPS = parseMaps(mapsTxt);
+  defaultMapsTxt = mapsTxt;
+  const customMapsTxt = localStorage.getItem('mesh-swap-rules');
+  MAPS = parseMaps(customMapsTxt !== null ? customMapsTxt : mapsTxt);
 
   applyTheme(settings.theme);
   applyLang(lang);
 
   const inputEl = document.getElementById('input');
-  const isFirstVisit = !localStorage.getItem('mt-visited');
-  localStorage.setItem('mt-visited', '1');
+  const isFirstVisit = !localStorage.getItem('mesh-visited');
+  localStorage.setItem('mesh-visited', '1');
 
   if (isFirstVisit) {
     try {
@@ -282,7 +340,7 @@ async function initApp() {
       compress(level);
     } catch {}
   } else {
-    const saved = settings.saveText ? (localStorage.getItem('mt-text') || '') : '';
+    const saved = settings.saveText ? (localStorage.getItem('mesh-text') || '') : '';
     inputEl.value = saved;
     if (saved) compress(level);
     else updateStats();
@@ -298,14 +356,14 @@ async function initApp() {
 
   slider.addEventListener('input', function() {
     level = parseInt(this.value);
-    localStorage.setItem('mt-level', level);
+    localStorage.setItem('mesh-level', level);
     updateHandleColor(level);
     if (inputEl.value) compress(level);
   });
 
   window.addEventListener('beforeunload', () => {
-    if (settings.saveText) localStorage.setItem('mt-text', inputEl.value);
-    else localStorage.removeItem('mt-text');
+    if (settings.saveText) localStorage.setItem('mesh-text', inputEl.value);
+    else localStorage.removeItem('mesh-text');
   });
 
   inputEl.addEventListener('input', () => {
@@ -329,7 +387,7 @@ async function initApp() {
     if (e.target === document.getElementById('s-overlay')) closeSettings();
   });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeSettings();
+    if (e.key === 'Escape') { closeSettings(); closeSwapRules(); }
   });
 
   document.getElementById('s-lang').addEventListener('change', function() {
@@ -362,6 +420,15 @@ async function initApp() {
   document.getElementById('s-save-text').addEventListener('change', function() {
     settings.saveText = this.checked;
     saveSettings();
+  });
+
+  document.getElementById('s-swap-rules-btn').addEventListener('click', openSwapRules);
+
+  document.getElementById('sr-x').addEventListener('click', closeSwapRules);
+  document.getElementById('sr-cancel').addEventListener('click', closeSwapRules);
+  document.getElementById('sr-save').addEventListener('click', saveSwapRules);
+  document.getElementById('sr-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('sr-overlay')) closeSwapRules();
   });
 }
 

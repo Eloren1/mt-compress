@@ -387,3 +387,61 @@ footer a{color:#555;text-decoration:underline;text-underline-offset:2px}
   transition:opacity .12s;
 }
 .s-close-btn:hover{opacity:.85}
+
+.s-swap-rules-btn{
+  width:100%;
+  background:none;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:7px 14px;
+  font-size:14px;
+  color:var(--text);
+  cursor:pointer;
+  text-align:left;
+  transition:background .12s,border-color .12s;
+}
+.s-swap-rules-btn:hover{background:var(--border)}
+
+.s-box-tall{
+  max-width:520px;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  max-height:90vh;
+}
+
+.s-body-grow{
+  flex:1;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  padding:12px 16px;
+}
+
+.sr-textarea{
+  flex:1;
+  width:100%;
+  min-height:612px;
+  resize:none;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+  font-size:13px;
+  font-family:monospace;
+  line-height:1.5;
+  outline:none;
+  box-sizing:border-box;
+}
+
+.s-footer-two{
+  justify-content:space-between;
+}
+
+.s-cancel-btn{
+  background:none;
+  color:var(--dim);
+  border:1px solid var(--border);
+}
+.s-cancel-btn:hover{opacity:1;background:var(--border);color:var(--text)}
