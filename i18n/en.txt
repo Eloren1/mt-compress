@@ -14,6 +14,7 @@ sThemeLbl=Theme
 sThemeDark=Dark
 sThemeBlack=Black
 sThemeLight=Light
+sThemeMirror=Mirror
 sBatchLbl=Batch size
 sCopyLbl=Copy on output field click
 sSaveTextLbl=Save text before leaving

@@ -15,6 +15,7 @@ sThemeLbl=Тема
 sThemeDark=Темная
 sThemeBlack=Черная
 sThemeLight=Светлая
+sThemeMirror=Зеркало
 sBatchLbl=Размер пакета
 sCopyLbl=Копировать по нажатию на поле вывода
 sSaveTextLbl=Сохранять текст перед уходом
