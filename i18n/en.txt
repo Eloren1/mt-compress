@@ -19,6 +19,7 @@ sHighlightLbl=Highlight replaced characters
 sCloseBtn=Close
 sSwapRulesBtn=Configure character swap rules
 sInstallBtn=Add to home screen
+sInstallHint=Tap Share {icon} → "Add to Home Screen"
 sSwapRulesTitle=Character swap rules
 sSwapRulesCancel=Cancel
 sSwapRulesSave=Save

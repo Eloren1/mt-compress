@@ -95,8 +95,9 @@
       <div class="s-row">
         <button class="s-swap-rules-btn" id="s-swap-rules-btn">Настроить правила замены символов</button>
       </div>
-      <div class="s-row" id="s-install-row" style="display:none">
+<div class="s-row s-row-install" id="s-install-row" style="display:none">
         <button class="s-swap-rules-btn" id="s-install-btn">Добавить на рабочий стол</button>
+        <div class="s-install-hint" id="s-install-hint" style="display:none"></div>
       </div>
     </div>
     <div class="s-footer">
@@ -142,10 +143,23 @@ const LEVEL_COLORS = ['','var(--lc-1)','var(--lc-2)','var(--lc-3)','var(--lc-4)'
 
 const I18N = {};
 let installPrompt = null;
+
+function detectIOS() {
+  return /iP(hone|od|ad)/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+}
+
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   installPrompt = e;
-  document.getElementById('s-install-row').style.display = '';
+  if (!isStandalone()) {
+    document.getElementById('s-install-hint').style.display = 'none';
+    document.getElementById('s-install-row').style.display = '';
+  }
 });
 
 function detectBrowserLang() {
@@ -210,6 +224,7 @@ function applyLang(l) {
   document.getElementById('s-close-btn').textContent    = t.sCloseBtn;
   document.getElementById('s-swap-rules-btn').textContent = t.sSwapRulesBtn;
   document.getElementById('s-install-btn').textContent   = t.sInstallBtn;
+  document.getElementById('s-install-hint').innerHTML = t.sInstallHint.replace('{icon}', '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 48 48" style="vertical-align:-4px" aria-hidden="true"><path d="M35.274 15.838H31.18a1.5 1.5 0 1 0 0 3h4.095c.827 0 1.5.673 1.5 1.5v19.616c0 .827-.673 1.5-1.5 1.5H12.726c-.827 0-1.5-.673-1.5-1.5V20.338c0-.827.673-1.5 1.5-1.5h4.095a1.5 1.5 0 1 0 0-3h-4.095a4.505 4.505 0 0 0-4.5 4.5v19.616c0 2.481 2.019 4.5 4.5 4.5h22.549c2.481 0 4.5-2.019 4.5-4.5V20.338a4.506 4.506 0 0 0-4.501-4.5zM18.407 12.81l4.143-4.143v19.748a1.5 1.5 0 1 0 3 0V8.667l4.143 4.143c.293.293.677.439 1.061.439s.768-.146 1.061-.439a1.5 1.5 0 0 0 0-2.121l-6.703-6.704a1.5 1.5 0 0 0-2.122 0l-6.704 6.704a1.5 1.5 0 1 0 2.121 2.121z" fill="currentColor"/></svg>');
   document.getElementById('sr-title').textContent       = t.sSwapRulesTitle;
   document.getElementById('sr-cancel').textContent      = t.sSwapRulesCancel;
   document.getElementById('sr-save').textContent        = t.sSwapRulesSave;
@@ -348,6 +363,14 @@ function saveSwapRules() {
 }
 
 async function initApp() {
+  if (!isStandalone() && !installPrompt && detectIOS()) {
+    document.getElementById('s-install-row').style.display = '';
+    if (localStorage.getItem('mesh-install-hint')) {
+      document.getElementById('s-install-btn').style.display = 'none';
+      document.getElementById('s-install-hint').style.display = '';
+    }
+  }
+
   const isFirstVisit = !localStorage.getItem('mesh-visited');
   localStorage.setItem('mesh-visited', '1');
 
@@ -479,7 +502,18 @@ async function initApp() {
 
   document.getElementById('s-swap-rules-btn').addEventListener('click', openSwapRules);
   document.getElementById('s-install-btn').addEventListener('click', () => {
-    if (installPrompt) { installPrompt.prompt(); installPrompt.userChoice.then(() => { installPrompt = null; document.getElementById('s-install-row').style.display = 'none'; }); }
+    if (installPrompt) {
+      installPrompt.prompt();
+      installPrompt.userChoice.then(() => {
+        installPrompt = null;
+        document.getElementById('s-install-row').style.display = 'none';
+      });
+    } else {
+      if (navigator.share) navigator.share({ title: document.title, url: location.href }).catch(() => {});
+      localStorage.setItem('mesh-install-hint', '1');
+      document.getElementById('s-install-btn').style.display = 'none';
+      document.getElementById('s-install-hint').style.display = '';
+    }
   });
   document.getElementById('sr-x').addEventListener('click', closeSwapRules);
   document.getElementById('sr-cancel').addEventListener('click', closeSwapRules);
@@ -487,6 +521,10 @@ async function initApp() {
   document.getElementById('sr-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('sr-overlay')) closeSwapRules();
   });
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
 }
 
 initApp();

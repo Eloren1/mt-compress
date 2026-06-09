@@ -497,6 +497,9 @@ footer a{color:var(--dim);text-decoration:underline;text-underline-offset:2px}
 }
 .s-swap-rules-btn:hover{background:var(--ghost-hover)}
 
+.s-row-install{flex-direction:column;align-items:stretch}
+.s-install-hint{font-size:14px;line-height:1.4;padding:6px 10px 8px}
+
 .s-box-tall{
   max-width:520px;
   width:100%;

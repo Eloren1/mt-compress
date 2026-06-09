@@ -19,6 +19,7 @@ sHighlightLbl=Выделять цветом замененные символы
 sCloseBtn=Закрыть
 sSwapRulesBtn=Настроить правила замены символов
 sInstallBtn=Добавить на рабочий стол
+sInstallHint=Нажмите «Поделиться» {icon} → «На экран Домой»
 sSwapRulesTitle=Правила замены символов
 sSwapRulesCancel=Отмена
 sSwapRulesSave=Сохранить
