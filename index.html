@@ -61,10 +61,6 @@
           <option value="mirror" id="s-theme-mirror">Зеркало</option>
         </select>
       </div>
-      <div class="s-row">
-        <span id="s-batch-lbl">Размер пакета</span>
-        <input type="number" id="s-batch" min="1" max="9999" value="200">
-      </div>
       <div class="s-row s-row-check">
         <label for="s-copy-click" id="s-copy-lbl">Копировать по нажатию на поле вывода</label>
         <input type="checkbox" id="s-copy-click" checked>
@@ -135,29 +131,17 @@ function parseTxt(text) {
 }
 
 function makeI18N(raw) {
-  function packWord(p) {
-    if (raw.pack5 !== undefined) {
-      const abs = Math.abs(p) % 100;
-      const r = abs % 10;
-      if (abs >= 11 && abs <= 19) return raw.pack5;
-      if (r === 1) return raw.pack1;
-      if (r >= 2 && r <= 4) return raw.pack2;
-      return raw.pack5;
-    }
-    return p === 1 ? raw.pack1 : raw.pack2;
-  }
   return {
     ...raw,
     statsBytes: ob => raw.statsBytes.replace('{ob}', ob),
-    statsLine: (lv, ob, cb, pct, p) =>
+    statsLine: (lv, ob, cb, pct) =>
       raw.statsLine
         .replace('{lv}', lv).replace('{ob}', ob)
-        .replace('{cb}', cb).replace('{pct}', pct)
-        .replace('{p}', p).replace('{pw}', packWord(p)),
+        .replace('{cb}', cb).replace('{pct}', pct),
   };
 }
 
-const DEFAULT_SETTINGS = { lang: detectBrowserLang(), theme: 'dark', batchSize: 200, copyOnClick: true, saveText: true };
+const DEFAULT_SETTINGS = { lang: detectBrowserLang(), theme: 'dark', copyOnClick: true, saveText: true };
 let settings = { ...DEFAULT_SETTINGS };
 try { Object.assign(settings, JSON.parse(localStorage.getItem('mesh-settings') || '{}')); } catch {}
 
@@ -184,7 +168,6 @@ function applyLang(l) {
   document.getElementById('s-theme-black').textContent  = t.sThemeBlack;
   document.getElementById('s-theme-light').textContent  = t.sThemeLight;
   document.getElementById('s-theme-mirror').textContent = t.sThemeMirror;
-  document.getElementById('s-batch-lbl').textContent    = t.sBatchLbl;
   document.getElementById('s-copy-lbl').textContent     = t.sCopyLbl;
   document.getElementById('s-save-text-lbl').textContent = t.sSaveTextLbl;
   document.getElementById('s-close-btn').textContent    = t.sCloseBtn;
@@ -253,8 +236,7 @@ function updateStats() {
 
   const cb = byteLen(resultText);
   const pct = Math.round((ob - cb) / ob * 100);
-  const p = Math.ceil(cb / settings.batchSize);
-  el.textContent = t.statsLine(level, ob, cb, pct, p);
+  el.textContent = t.statsLine(level, ob, cb, pct);
 }
 
 let popTimer;
@@ -287,7 +269,6 @@ function resultClick() {
 function openSettings() {
   document.getElementById('s-lang').value = settings.lang;
   document.getElementById('s-theme').value = settings.theme;
-  document.getElementById('s-batch').value = settings.batchSize;
   document.getElementById('s-copy-click').checked = settings.copyOnClick;
   document.getElementById('s-save-text').checked = settings.saveText;
   document.getElementById('s-overlay').classList.add('open');
@@ -403,15 +384,6 @@ async function initApp() {
     settings.theme = this.value;
     applyTheme(this.value);
     saveSettings();
-  });
-
-  document.getElementById('s-batch').addEventListener('input', function() {
-    const v = parseInt(this.value);
-    if (v >= 1 && v <= 9999) {
-      settings.batchSize = v;
-      saveSettings();
-      updateStats();
-    }
   });
 
   document.getElementById('s-copy-click').addEventListener('change', function() {
