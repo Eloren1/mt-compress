@@ -1,4 +1,5 @@
 placeholder=Введите текст…
+resultPlaceholder=Результат здесь…
 statsBytes={ob} байт
 statsLine={ob} байт → {cb} байт   ({pct}%)
 srcLink=Исходный код
@@ -11,9 +12,9 @@ sThemeLbl=Тема
 sThemeDark=Темная
 sThemeBlack=Черная
 sThemeLight=Светлая
-sThemeMirror=Зеркало
+sThemeMirror=Ночная
 sThemeBeige=Бежевая
-sCopyLbl=Копировать по нажатию на результат
+sCopyLbl=Копировать нажатием на результат
 sSaveTextLbl=Сохранять текст перед уходом
 sHighlightLbl=Выделять замененные символы
 sCloseBtn=Закрыть

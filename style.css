@@ -12,7 +12,7 @@
   --accent:#2e6db3;
   --radius:14px;
 
-  --lc-1:#6bbfd8;
+  --lc-1:#6ceb97;
   --lc-2:#72e672;
   --lc-3:#c8b94a;
   --lc-4:#c46060;
@@ -104,10 +104,10 @@ body{
   display:flex;
   flex-direction:column;
   width:100%;
-  max-width:800px;
+  max-width:650px;
   height:100vh;
   height:100dvh;
-  max-height:1000px;
+  max-height:900px;
   padding:57px 14px 60px;
   gap:10px;
 }
@@ -142,6 +142,7 @@ body{
   caret-color:var(--accent);
 }
 #input::placeholder{color:var(--dim)}
+#result:empty::before{content:attr(data-placeholder);color:var(--dim)}
 #input::-webkit-scrollbar,#result::-webkit-scrollbar{display:none}
 #input,#result{scrollbar-width:none;-ms-overflow-style:none}
 

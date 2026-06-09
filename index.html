@@ -23,7 +23,7 @@
 
 <div class="app">
   <div class="app-header"><img src="src/icon/icon.svg" width="18" height="18" style="vertical-align:-3px;margin-right:6px" alt="">MeshCompact</div>
-  <textarea id="input" placeholder="" spellcheck="false"
+  <textarea id="input" placeholder="Введите текст…" spellcheck="false"
             autocorrect="off" autocapitalize="off"></textarea>
 
   <div class="stats-row">
@@ -32,7 +32,7 @@
   </div>
 
   <div class="result-wrap">
-    <div id="result" onclick="resultClick()"></div>
+    <div id="result" data-placeholder="Результат здесь…" onclick="resultClick()"></div>
     <button class="clip-btn" id="clip-btn" onclick="copyResult()" aria-label="Copy">
       <svg class="icon-clip" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="9" y="2" width="6" height="4" rx="1"/>
@@ -76,8 +76,8 @@
           <option value="light" id="s-theme-light"></option>
           <option value="beige" id="s-theme-beige"></option>
           <option value="dark" id="s-theme-dark"></option>
-          <option value="black" id="s-theme-black"></option>
           <option value="mirror" id="s-theme-mirror"></option>
+          <option value="black" id="s-theme-black"></option>
         </select>
       </div>
       <div class="s-row s-row-check">
@@ -206,6 +206,7 @@ function applyLang(l) {
   document.documentElement.setAttribute('data-lang', l);
   const t = I18N[l];
   document.getElementById('input').placeholder          = t.placeholder;
+  document.getElementById('result').dataset.placeholder = t.resultPlaceholder;
   document.getElementById('src-link').textContent       = t.srcLink;
   document.getElementById('local-note').textContent     = t.localNote;
   document.getElementById('settings-link').textContent  = t.settingsLink;
@@ -224,7 +225,7 @@ function applyLang(l) {
   document.getElementById('s-close-btn').textContent    = t.sCloseBtn;
   document.getElementById('s-swap-rules-btn').textContent = t.sSwapRulesBtn;
   document.getElementById('s-install-btn').textContent   = t.sInstallBtn;
-  document.getElementById('s-install-hint').innerHTML = t.sInstallHint.replace('{icon}', '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 48 48" style="vertical-align:-5px" aria-hidden="true"><path d="M35.274 15.838H31.18a1.5 1.5 0 1 0 0 3h4.095c.827 0 1.5.673 1.5 1.5v19.616c0 .827-.673 1.5-1.5 1.5H12.726c-.827 0-1.5-.673-1.5-1.5V20.338c0-.827.673-1.5 1.5-1.5h4.095a1.5 1.5 0 1 0 0-3h-4.095a4.505 4.505 0 0 0-4.5 4.5v19.616c0 2.481 2.019 4.5 4.5 4.5h22.549c2.481 0 4.5-2.019 4.5-4.5V20.338a4.506 4.506 0 0 0-4.501-4.5zM18.407 12.81l4.143-4.143v19.748a1.5 1.5 0 1 0 3 0V8.667l4.143 4.143c.293.293.677.439 1.061.439s.768-.146 1.061-.439a1.5 1.5 0 0 0 0-2.121l-6.703-6.704a1.5 1.5 0 0 0-2.122 0l-6.704 6.704a1.5 1.5 0 1 0 2.121 2.121z" fill="currentColor"/></svg>');
+  document.getElementById('s-install-hint').innerHTML = t.sInstallHint.replace('{icon}', '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 48 48" style="vertical-align:-3px" aria-hidden="true"><path d="M35.274 15.838H31.18a1.5 1.5 0 1 0 0 3h4.095c.827 0 1.5.673 1.5 1.5v19.616c0 .827-.673 1.5-1.5 1.5H12.726c-.827 0-1.5-.673-1.5-1.5V20.338c0-.827.673-1.5 1.5-1.5h4.095a1.5 1.5 0 1 0 0-3h-4.095a4.505 4.505 0 0 0-4.5 4.5v19.616c0 2.481 2.019 4.5 4.5 4.5h22.549c2.481 0 4.5-2.019 4.5-4.5V20.338a4.506 4.506 0 0 0-4.501-4.5zM18.407 12.81l4.143-4.143v19.748a1.5 1.5 0 1 0 3 0V8.667l4.143 4.143c.293.293.677.439 1.061.439s.768-.146 1.061-.439a1.5 1.5 0 0 0 0-2.121l-6.703-6.704a1.5 1.5 0 0 0-2.122 0l-6.704 6.704a1.5 1.5 0 1 0 2.121 2.121z" fill="currentColor"/></svg>');
   document.getElementById('sr-title').textContent       = t.sSwapRulesTitle;
   document.getElementById('sr-cancel').textContent      = t.sSwapRulesCancel;
   document.getElementById('sr-save').textContent        = t.sSwapRulesSave;
