@@ -1,7 +1,6 @@
 placeholder=Enter text…
-statsEmpty=Enter text
 statsBytes={ob} bytes
-statsLine=Compress {lv}   ·   {ob} bytes → {cb} bytes   ·   −{pct}%
+statsLine={ob} bytes → {cb} bytes   ·   −{pct}%
 srcLink=Source code
 localNote=Text is processed locally on device
 settingsLink=Settings

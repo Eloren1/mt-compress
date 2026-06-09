@@ -19,12 +19,22 @@
             autocorrect="off" autocapitalize="off"></textarea>
 
   <div class="stats-row">
-    <span id="stats">Введите текст</span>
-    <button class="cp" onclick="copyResult()">COPY</button>
+    <span id="stats"></span>
     <div class="popup" id="popup"><div class="popup-box" id="popup-box">Скопировано!</div></div>
   </div>
 
-  <div id="result" onclick="resultClick()"></div>
+  <div class="result-wrap">
+    <div id="result" onclick="resultClick()"></div>
+    <button class="clip-btn" id="clip-btn" onclick="copyResult()" aria-label="Copy">
+      <svg class="icon-clip" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="2" width="6" height="4" rx="1"/>
+        <path d="M17 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+      </svg>
+      <svg class="icon-check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </button>
+  </div>
 
   <div class="slider-section">
     <div class="slider-wrap">
@@ -134,9 +144,9 @@ function makeI18N(raw) {
   return {
     ...raw,
     statsBytes: ob => raw.statsBytes.replace('{ob}', ob),
-    statsLine: (lv, ob, cb, pct) =>
+    statsLine: (ob, cb, pct) =>
       raw.statsLine
-        .replace('{lv}', lv).replace('{ob}', ob)
+        .replace('{ob}', ob)
         .replace('{cb}', cb).replace('{pct}', pct),
   };
 }
@@ -231,20 +241,26 @@ function updateStats() {
   const t = I18N[lang];
   const ob = byteLen(input);
 
-  if (!ob) { el.textContent = t.statsEmpty; return; }
+  if (!ob) { el.textContent = ''; return; }
   if (!resultText) { el.textContent = t.statsBytes(ob); return; }
 
   const cb = byteLen(resultText);
   const pct = Math.round((ob - cb) / ob * 100);
-  el.textContent = t.statsLine(level, ob, cb, pct);
+  el.textContent = t.statsLine(ob, cb, pct);
 }
 
-let popTimer;
+let popTimer, clipTimer;
 function showPopup() {
   const p = document.getElementById('popup');
   p.classList.add('show');
   clearTimeout(popTimer);
-  popTimer = setTimeout(() => p.classList.remove('show'), 1100);
+  popTimer = setTimeout(() => p.classList.remove('show'), 1400);
+}
+function showCheckmark() {
+  const btn = document.getElementById('clip-btn');
+  btn.classList.add('copied');
+  clearTimeout(clipTimer);
+  clipTimer = setTimeout(() => btn.classList.remove('copied'), 1400);
 }
 
 async function copyResult() {
@@ -260,6 +276,11 @@ async function copyResult() {
     ta.remove();
   }
   showPopup();
+  showCheckmark();
+}
+
+function updateResultCursor() {
+  document.getElementById('result').classList.toggle('clickable', settings.copyOnClick);
 }
 
 function resultClick() {
@@ -311,6 +332,7 @@ async function initApp() {
 
   applyTheme(settings.theme);
   applyLang(lang);
+  updateResultCursor();
 
   const inputEl = document.getElementById('input');
   const isFirstVisit = !localStorage.getItem('mesh-visited');
@@ -389,6 +411,7 @@ async function initApp() {
   document.getElementById('s-copy-click').addEventListener('change', function() {
     settings.copyOnClick = this.checked;
     saveSettings();
+    updateResultCursor();
   });
 
   document.getElementById('s-save-text').addEventListener('change', function() {

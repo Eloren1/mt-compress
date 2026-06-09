@@ -1,7 +1,6 @@
 placeholder=Введите текст…
-statsEmpty=Введите текст
 statsBytes={ob} байт
-statsLine=Сжатие {lv}   ·   {ob} байт → {cb} байт   ·   −{pct}%
+statsLine={ob} байт → {cb} байт   ·   −{pct}%
 srcLink=Исходный код
 localNote=Текст обрабатывается локально на устройстве
 settingsLink=Настройки
