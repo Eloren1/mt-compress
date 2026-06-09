@@ -84,6 +84,8 @@
   --ghost-hover:#ddd5c4;
 }
 
+::selection{background:var(--accent);color:#fff}
+
 html,body{
   height:100%;
   background:var(--bg);
@@ -110,9 +112,11 @@ body{
   gap:10px;
 }
 
+.app-header img{filter:grayscale(1);opacity:.43}
+
 .app-header{
   position:fixed;
-  top:0;left:0;right:0;
+  top:2px;left:0;right:0;
   padding:13px 16px 5px;
   font-size:16px;
   font-weight:600;
