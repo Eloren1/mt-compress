@@ -12,6 +12,7 @@ sThemeDark=Темная
 sThemeBlack=Черная
 sThemeLight=Светлая
 sThemeMirror=Зеркало
+sThemeBeige=Бежевая
 sCopyLbl=Копировать по нажатию на поле вывода
 sSaveTextLbl=Сохранять текст перед уходом
 sHighlightLbl=Выделять цветом замененные символы

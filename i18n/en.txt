@@ -12,6 +12,7 @@ sThemeDark=Dark
 sThemeBlack=Black
 sThemeLight=Light
 sThemeMirror=Mirror
+sThemeBeige=Beige
 sCopyLbl=Copy on output field click
 sSaveTextLbl=Save text before leaving
 sHighlightLbl=Highlight replaced characters
