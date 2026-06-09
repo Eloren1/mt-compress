@@ -8,7 +8,7 @@
   --border:#333;
   --text:#dddddd;
   --dim:#666;
-  --green:#96e496;
+  --green:#8ed48e;
   --accent:#2e6db3;
   --radius:14px;
 
@@ -46,7 +46,6 @@
   --text:#c9d1d9;
   --dim:#6e7681;
   --accent:#4080cc;
-  --green:#78d878;
   --track-bg:#2d333b;
   --track-tick:rgba(0,0,0,0.5);
   --ghost-hover:#2d333b;
@@ -60,7 +59,7 @@
   --border:#cccccc;
   --text:#1a1a1a;
   --dim:#999;
-  --green:#0e8a0e;
+  --green:#0a8c0a;
   --accent:#1a6fd4;
   --track-bg:#bbbbbb;
   --track-tick:rgba(255,255,255,0.5);
@@ -75,7 +74,7 @@
   --border:#b9b2a1;
   --text:#211d16;
   --dim:#5a5347;
-  --green:#2e7d5a;
+  --green:#0a8c0a;
   --accent:#9b6020;
   --track-bg:#cfcabc;
   --track-tick:rgba(255,255,255,0.5);
