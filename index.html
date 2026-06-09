@@ -509,7 +509,6 @@ async function initApp() {
         document.getElementById('s-install-row').style.display = 'none';
       });
     } else {
-      if (navigator.share) navigator.share({ title: document.title, url: location.href }).catch(() => {});
       localStorage.setItem('mesh-install-hint', '1');
       document.getElementById('s-install-btn').style.display = 'none';
       document.getElementById('s-install-hint').style.display = '';
@@ -524,7 +523,18 @@ async function initApp() {
 }
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const sw = reg.installing;
+        sw.addEventListener('statechange', () => {
+          if (sw.state === 'activated' && navigator.serviceWorker.controller) {
+            location.reload();
+          }
+        });
+      });
+    });
+  });
 }
 
 initApp();

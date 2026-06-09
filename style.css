@@ -208,6 +208,9 @@ body{
 
 .slider-section{
   flex-shrink:0;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
   background:var(--panel);
   border:1px solid var(--border);
   border-radius:var(--radius);
