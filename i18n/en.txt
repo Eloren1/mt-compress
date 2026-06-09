@@ -1,6 +1,6 @@
 placeholder=Enter text…
 statsBytes={ob} bytes
-statsLine={ob} bytes → {cb} bytes   ·   −{pct}%
+statsLine={ob} bytes → {cb} bytes   (−{pct}%)
 srcLink=Source code
 localNote=Text is processed locally on device
 settingsLink=Settings
@@ -16,6 +16,7 @@ sCopyLbl=Copy on output field click
 sSaveTextLbl=Save text before leaving
 sCloseBtn=Close
 sSwapRulesBtn=Configure character swap rules
+sInstallBtn=Add to home screen
 sSwapRulesTitle=Character swap rules
 sSwapRulesCancel=Cancel
 sSwapRulesSave=Save

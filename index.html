@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html data-theme="dark" data-lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Mesh Compress</title>
+<title>Mesh Compact</title>
 <script>
 (function(){
   try{var s=JSON.parse(localStorage.getItem('mesh-settings')||'{}');
@@ -43,8 +43,8 @@
   </div>
 </div>
 
-<footer>
-  <a href="https://github.com/Eloren1/mesh-compress" id="src-link" target="_blank" rel="noopener">Исходный код</a><span class="f-sep" id="f-sep-1">&ensp;·&ensp;</span><span id="local-note">Текст обрабатывается локально на вашем устройстве</span><span class="f-sep" id="f-sep-2">&ensp;·&ensp;</span><a href="#" id="settings-link">Настройки</a>
+<footer style="visibility:hidden">
+  <a href="https://github.com/Eloren1/MeshCompact" id="src-link" target="_blank" rel="noopener">Исходный код</a><span class="f-sep" id="f-sep-1">&ensp;·&ensp;</span><span id="local-note">Текст обрабатывается локально на вашем устройстве</span><span class="f-sep" id="f-sep-2">&ensp;·&ensp;</span><a href="#" id="settings-link">Настройки</a>
 </footer>
 
 <!-- Settings Modal -->
@@ -81,6 +81,9 @@
       </div>
       <div class="s-row">
         <button class="s-swap-rules-btn" id="s-swap-rules-btn">Настроить правила замены символов</button>
+      </div>
+      <div class="s-row" id="s-install-row" style="display:none">
+        <button class="s-swap-rules-btn" id="s-install-btn">Добавить на рабочий стол</button>
       </div>
     </div>
     <div class="s-footer">
@@ -125,6 +128,12 @@ function parseMaps(text) {
 const LEVEL_COLORS = ['','var(--lc-1)','var(--lc-2)','var(--lc-3)','var(--lc-4)'];
 
 const I18N = {};
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installPrompt = e;
+  document.getElementById('s-install-row').style.display = '';
+});
 
 function detectBrowserLang() {
   return (navigator.language || 'en').toLowerCase().startsWith('ru') ? 'ru' : 'en';
@@ -182,6 +191,7 @@ function applyLang(l) {
   document.getElementById('s-save-text-lbl').textContent = t.sSaveTextLbl;
   document.getElementById('s-close-btn').textContent    = t.sCloseBtn;
   document.getElementById('s-swap-rules-btn').textContent = t.sSwapRulesBtn;
+  document.getElementById('s-install-btn').textContent   = t.sInstallBtn;
   document.getElementById('sr-title').textContent       = t.sSwapRulesTitle;
   document.getElementById('sr-cancel').textContent      = t.sSwapRulesCancel;
   document.getElementById('sr-save').textContent        = t.sSwapRulesSave;
@@ -332,6 +342,7 @@ async function initApp() {
 
   applyTheme(settings.theme);
   applyLang(lang);
+  document.querySelector('footer').style.visibility = '';
   updateResultCursor();
 
   const inputEl = document.getElementById('input');
@@ -420,7 +431,9 @@ async function initApp() {
   });
 
   document.getElementById('s-swap-rules-btn').addEventListener('click', openSwapRules);
-
+  document.getElementById('s-install-btn').addEventListener('click', () => {
+    if (installPrompt) { installPrompt.prompt(); installPrompt.userChoice.then(() => { installPrompt = null; document.getElementById('s-install-row').style.display = 'none'; }); }
+  });
   document.getElementById('sr-x').addEventListener('click', closeSwapRules);
   document.getElementById('sr-cancel').addEventListener('click', closeSwapRules);
   document.getElementById('sr-save').addEventListener('click', saveSwapRules);
