@@ -1,4 +1,4 @@
-const CACHE = 'meshcompact-v3';
+const CACHE = 'meshcompact-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -8,7 +8,7 @@ const ASSETS = [
   './i18n/ru.txt',
   './i18n/en.txt',
   './src/icons/icon.svg',
-  './src/icons/ios_share.svg',
+  './src/fonts/RobotoMono-Regular.ttf',
   './src/icons/icon-192.png',
   './src/icons/icon-512.png',
   './src/icons/apple-touch-icon.png',

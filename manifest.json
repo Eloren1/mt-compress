@@ -1,6 +1,7 @@
 {
   "name": "MeshCompact",
   "short_name": "MeshCompact",
+  "description": "Swap Cyrillic chars to ASCII lookalikes for Meshtastic to reduce message byte size.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#1e1e1e",

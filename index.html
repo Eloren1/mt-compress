@@ -254,9 +254,7 @@ function mergedMap(n) {
 }
 
 function byteLen(str) {
-  let n = 0;
-  for (const ch of str) n += ch.codePointAt(0) < 128 ? 1 : 2;
-  return n;
+  return new TextEncoder().encode(str).length;
 }
 
 function esc(s) {
