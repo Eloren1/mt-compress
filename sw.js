@@ -1,4 +1,4 @@
-const CACHE = 'meshcompact-v4';
+const CACHE = 'meshcompact-v5';
 const ASSETS = [
   './',
   './index.html',
