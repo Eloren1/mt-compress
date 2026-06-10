@@ -1,4 +1,4 @@
-const CACHE = 'meshcompact-v2';
+const CACHE = 'meshcompact-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -7,11 +7,11 @@ const ASSETS = [
   './swap_rules.txt',
   './i18n/ru.txt',
   './i18n/en.txt',
-  './src/icon/icon.svg',
-  './src/ios_share.svg',
-  './src/icon/icon-192.png',
-  './src/icon/icon-512.png',
-  './src/icon/apple-touch-icon.png',
+  './src/icons/icon.svg',
+  './src/icons/ios_share.svg',
+  './src/icons/icon-192.png',
+  './src/icons/icon-512.png',
+  './src/icons/apple-touch-icon.png',
 ];
 
 self.addEventListener('install', e => {
